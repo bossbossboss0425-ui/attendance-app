@@ -103,18 +103,20 @@ erDiagram
 
 - Docker
 - Docker compose
-  ※ Windowsの場合はWSL2の利用を推奨します。
+
+    ※ Windowsの場合はWSL2の利用を推奨します。
 
 ## 環境構築手順
 
 1. リポジトリをクローン
 
 ```bash
-git clone
+    git clone
 ```
 
 2. .envファイルの編集
-   .env ファイルを開き、データベース接続情報が以下と一致していることを確認します。
+
+    .env ファイルを開き、データベース接続情報が以下と一致していることを確認します。
 
 ```bash
     DB_CONNECTION=mysql
@@ -130,7 +132,8 @@ git clone
 ```
 
 3. phpMyAdmin を compose.yaml に追記
-   compose.yaml を開き、mysql サービスの後に以下の設定を追加してください。
+
+    compose.yaml を開き、mysql サービスの後に以下の設定を追加してください。
 
 ```bash
     phpmyadmin:
@@ -148,7 +151,8 @@ git clone
 ```
 
 4. Composer依存パッケージのインストール
-   プロジェクトの初回セットアップ時は、vendor ディレクトリが存在しないため sail コマンドを使用できません。 以下のDockerコマンドを実行して、コンテナ内で composer install を実行します。
+
+    プロジェクトの初回セットアップ時は、vendor ディレクトリが存在しないため sail コマンドを使用できません。 以下のDockerコマンドを実行して、コンテナ内で composer install を実行します。
 
 ```bash
     docker run --rm \
@@ -160,14 +164,16 @@ git clone
 ```
 
 5. Laravel Sailの起動
-   以下のコマンドでDockerコンテナを起動します。
+
+    以下のコマンドでDockerコンテナを起動します。
 
 ```bash
     ./vendor/bin/sail up -d
 ```
 
 6. エイリアスの設定（推奨）
-   毎回 ./vendor/bin/sail と入力するのは手間なので、エイリアスを設定すると便利です。
+
+    毎回 ./vendor/bin/sail と入力するのは手間なので、エイリアスを設定すると便利です。
 
 ```bash
     alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
@@ -180,7 +186,8 @@ git clone
 ```
 
 8. データベースのマイグレーションと初期データ投入
-   以下のコマンドでテーブルを作成し、ダミーデータを投入します。
+
+    以下のコマンドでテーブルを作成し、ダミーデータを投入します。
 
 ```bash
     sail artisan migrate:fresh --seed
@@ -202,6 +209,7 @@ git clone
 ```
 
 10. アプリケーションへのアクセス
+
     ブラウザで http://localhost にアクセスします。
 
 ## テスト実行
