@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\AttendanceRecord;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -42,4 +43,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class);
+    }
+
+    // 当日の勤怠ステータスを取得するアクセサ ($user->attendance_status)
+    public function getAttendanceStatusAttribute(): string
+    {
+        $today = Carbon::today()->toDateString();
+
+        // 今日の勤怠レコードを取得
+        $todayRecord = $this->attendanceRecords()
+            ->where('date', $today)
+            ->first();
+
+        // 当日のレコードがなければ「勤務外」
+        if (!$todayRecord) {
+            return '勤務外';
+        }
+
+        // DBのstatus（勤務外 / 出勤中 / 休憩中 / 退勤済）を返す
+        return $todayRecord->status;
+    }
 }
