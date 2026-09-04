@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\StampCorrectionRequest;
 use App\Models\AttendanceRecord;
 use App\Models\BreakRecord;
-use Illuminate\Support\Facades\DB;
+use App\Models\StampCorrectionRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ApplicationController extends Controller
 {
@@ -23,6 +23,7 @@ class ApplicationController extends Controller
         $applications->transform(function ($application) {
             $application->approval_status = ($application->status === 'approved' || $application->status === '承認済み') ? '承認済み' : '承認待ち';
             $application->application_date = $application->created_at;
+
             return $application;
         });
 

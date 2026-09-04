@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\AttendanceRecord;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
@@ -55,7 +55,7 @@ class StaffController extends Controller
 
             $formattedAttendanceRecords[] = [
                 'id' => $record ? $record->id : null,
-                'date' => $currentDate->format('m/d') . '(' . $currentDate->isoFormat('dd') . ')',
+                'date' => $currentDate->format('m/d').'('.$currentDate->isoFormat('dd').')',
                 'clock_in' => ($record && $record->clock_in) ? Carbon::parse($record->clock_in)->format('H:i') : '',
                 'clock_out' => ($record && $record->clock_out) ? Carbon::parse($record->clock_out)->format('H:i') : '',
                 'total_break_time' => $record ? $record->total_break_time : null,

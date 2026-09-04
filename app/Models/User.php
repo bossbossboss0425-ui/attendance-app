@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\AttendanceRecord;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -43,6 +42,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
     public function attendanceRecords()
     {
         return $this->hasMany(AttendanceRecord::class);
@@ -59,7 +59,7 @@ class User extends Authenticatable
             ->first();
 
         // 当日のレコードがなければ「勤務外」
-        if (!$todayRecord) {
+        if (! $todayRecord) {
             return '勤務外';
         }
 

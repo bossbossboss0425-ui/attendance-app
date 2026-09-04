@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use App\Models\AttendanceRecord;
 use App\Models\StampCorrectionRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class StampCorrectionRequestController extends Controller
 {

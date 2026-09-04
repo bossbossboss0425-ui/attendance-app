@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AttendanceUpdateRequest;
 use App\Models\AttendanceRecord;
 use App\Models\StampCorrectionRequest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -20,7 +20,7 @@ class AttendanceController extends Controller
 
         // 曜日付きの日付表示（例: 2026年08月23日(日)）
         $week = ['日', '月', '火', '水', '木', '金', '土'];
-        $formattedDate = $now->format('Y年m月d日') . '(' . $week[$now->dayOfWeek] . ')';
+        $formattedDate = $now->format('Y年m月d日').'('.$week[$now->dayOfWeek].')';
         $formattedTime = $now->format('H:i');
 
         return view('user.attendance-register', compact('user', 'formattedDate', 'formattedTime'));
@@ -133,7 +133,7 @@ class AttendanceController extends Controller
             // Bladeに合わせて整形
             $formattedAttendanceRecords[] = [
                 'id' => $record ? $record->id : null,
-                'date' => $currentDate->format('m/d') . '(' . $week[$currentDate->dayOfWeek] . ')',
+                'date' => $currentDate->format('m/d').'('.$week[$currentDate->dayOfWeek].')',
                 'clock_in' => $record && $record->clock_in ? Carbon::parse($record->clock_in)->format('H:i') : '',
                 'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
                 'total_break_time' => $record ? $record->formatted_total_break_time : '',
@@ -148,6 +148,7 @@ class AttendanceController extends Controller
             'formattedAttendanceRecords'
         ));
     }
+
     // 勤怠詳細画面の表示
     public function show($id)
     {
@@ -216,6 +217,7 @@ class AttendanceController extends Controller
 
         return view('user.user-detail', compact('data', 'user'));
     }
+
     // 修正申請の送信処理
     public function update(AttendanceUpdateRequest $request, $id)
     {
@@ -229,7 +231,6 @@ class AttendanceController extends Controller
         if ($existingRequest) {
             return back()->withErrors(['comment' => '承認待ちの申請があるため修正できません']);
         }
-
 
         // DBへの保存
         $correctionRequest = StampCorrectionRequest::create([
@@ -246,7 +247,7 @@ class AttendanceController extends Controller
             foreach ($request->new_break_in as $index => $breakIn) {
                 $breakOut = $request->new_break_out[$index] ?? null;
 
-                if (!empty($breakIn) && !empty($breakOut)) {
+                if (! empty($breakIn) && ! empty($breakOut)) {
                     $targetDate = $attendance->date;
                     $correctionRequest->proposalBreaks()->create([
                         'new_break_in' => $breakIn,

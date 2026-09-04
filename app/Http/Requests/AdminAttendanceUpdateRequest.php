@@ -15,12 +15,12 @@ class AdminAttendanceUpdateRequest extends FormRequest
     {
         if ($this->has('new_break_in')) {
             $this->merge([
-                'new_break_in' => array_map(fn($v) => $v === '' ? null : $v, $this->new_break_in),
+                'new_break_in' => array_map(fn ($v) => $v === '' ? null : $v, $this->new_break_in),
             ]);
         }
         if ($this->has('new_break_out')) {
             $this->merge([
-                'new_break_out' => array_map(fn($v) => $v === '' ? null : $v, $this->new_break_out),
+                'new_break_out' => array_map(fn ($v) => $v === '' ? null : $v, $this->new_break_out),
             ]);
         }
     }

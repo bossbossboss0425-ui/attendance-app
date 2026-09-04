@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminAttendanceUpdateRequest;
 use App\Models\AttendanceRecord;
-use App\Models\User;
 use App\Models\BreakRecord;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -37,7 +37,6 @@ class AdminAttendanceController extends Controller
             'attendanceRecords'
         ));
     }
-
 
     // 管理者用勤怠一覧の表示
     public function show($id)
@@ -75,8 +74,8 @@ class AdminAttendanceController extends Controller
         $dateStr = Carbon::parse($record->date)->format('Y-m-d');
 
         // 出勤・退勤時刻の更新
-        $record->clock_in = !empty($validated['new_clock_in']) ? $dateStr . ' ' . $validated['new_clock_in'] : null;
-        $record->clock_out = !empty($validated['new_clock_out']) ? $dateStr . ' ' . $validated['new_clock_out'] : null;
+        $record->clock_in = ! empty($validated['new_clock_in']) ? $dateStr.' '.$validated['new_clock_in'] : null;
+        $record->clock_out = ! empty($validated['new_clock_out']) ? $dateStr.' '.$validated['new_clock_out'] : null;
         $record->comment = $validated['comment'];
         $record->save();
 
@@ -90,8 +89,8 @@ class AdminAttendanceController extends Controller
                 if ($breakIn || $breakOut) {
                     BreakRecord::create([
                         'attendance_record_id' => $record->id,
-                        'break_in' => $breakIn ? $dateStr . ' ' . $breakIn : null,
-                        'break_out' => $breakOut ? $dateStr . ' ' . $breakOut : null,
+                        'break_in' => $breakIn ? $dateStr.' '.$breakIn : null,
+                        'break_out' => $breakOut ? $dateStr.' '.$breakOut : null,
                     ]);
                 }
             }
@@ -99,5 +98,4 @@ class AdminAttendanceController extends Controller
 
         return redirect()->route('admin.attendance.index')->with('success', '勤怠情報を更新しました');
     }
-
 }

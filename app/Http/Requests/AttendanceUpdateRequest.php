@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AttendanceUpdateRequest extends FormRequest
@@ -18,12 +19,12 @@ class AttendanceUpdateRequest extends FormRequest
     {
         if ($this->has('new_break_in')) {
             $this->merge([
-                'new_break_in' => array_map(fn($v) => $v === '' ? null : $v, $this->new_break_in),
+                'new_break_in' => array_map(fn ($v) => $v === '' ? null : $v, $this->new_break_in),
             ]);
         }
         if ($this->has('new_break_out')) {
             $this->merge([
-                'new_break_out' => array_map(fn($v) => $v === '' ? null : $v, $this->new_break_out),
+                'new_break_out' => array_map(fn ($v) => $v === '' ? null : $v, $this->new_break_out),
             ]);
         }
     }
@@ -31,7 +32,7 @@ class AttendanceUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -66,5 +67,4 @@ class AttendanceUpdateRequest extends FormRequest
             'comment.required' => '備考を記入してください',
         ];
     }
-
 }

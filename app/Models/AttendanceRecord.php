@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class AttendanceRecord extends Model
 {
@@ -48,6 +48,7 @@ class AttendanceRecord extends Model
                 $totalSeconds += $out->diffInSeconds($in);
             }
         }
+
         return $totalSeconds;
     }
 
@@ -61,6 +62,7 @@ class AttendanceRecord extends Model
         }
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);
+
         return sprintf('%01d:%02d', $hours, $minutes);
     }
 
@@ -68,7 +70,7 @@ class AttendanceRecord extends Model
 
     public function getFormattedTotalTimeAttribute(): ?string
     {
-        if (!$this->clock_in || !$this->clock_out) {
+        if (! $this->clock_in || ! $this->clock_out) {
             return null;
         }
 
@@ -82,6 +84,7 @@ class AttendanceRecord extends Model
 
         $hours = floor($workSeconds / 3600);
         $minutes = floor(($workSeconds % 3600) / 60);
+
         return sprintf('%01d:%02d', $hours, $minutes);
     }
 }

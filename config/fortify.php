@@ -78,6 +78,7 @@ return [
         if (request()->is('admin/*') || request()->is('admin/login')) {
             return '/admin/attendance/list';
         }
+
         return '/attendance';
     },
 
@@ -165,6 +166,5 @@ return [
     'redirects' => [
         'logout' => 'login',
     ],
-
 
 ];

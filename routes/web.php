@@ -1,13 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\Admin\AdminAttendanceController;
+use App\Http\Controllers\Admin\ApplicationController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\StampCorrectionRequestController;
-use App\Http\Controllers\Admin\AdminAttendanceController;
-use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\Admin\ApplicationController;
+use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 // ----------------------------------------------------
 // 未認証（ゲスト）向けルート
