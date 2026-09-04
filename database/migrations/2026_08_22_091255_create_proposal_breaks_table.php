@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('proposal_breaks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('stamp_correction_request_id')->constrained('stamp_correction_requests')->onDelete('cascade');
-            $table->time('break_in');
-            $table->time('break_out')->nullable();
+            $table->time('new_break_in');
+            $table->time('new_break_out')->nullable();
             $table->timestamps();
         });
     }

@@ -72,8 +72,14 @@ return [
     | and the user is authenticated. You are free to change this value.
     |
     */
+    // 管理者と一般ユーザーのhomeを指定
 
-    'home' => '/attendance',
+    'home' => function () {
+        if (request()->is('admin/*') || request()->is('admin/login')) {
+            return '/admin/attendance/list';
+        }
+        return '/attendance';
+    },
 
     /*
     |--------------------------------------------------------------------------

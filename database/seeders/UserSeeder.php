@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'email' => 'user1@example.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'admin_status' => 0,
         ]);
 
         // 一般ユーザー2
@@ -25,14 +26,16 @@ class UserSeeder extends Seeder
             'email' => 'user2@example.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'admin_status' => 0,
         ]);
 
         // 管理者ユーザー
-        Admin::create([
+        User::create([
             'name' => '管理者ユーザー',
             'email' => 'user3@example.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'admin_status' => 1,
         ]);
     }
 }

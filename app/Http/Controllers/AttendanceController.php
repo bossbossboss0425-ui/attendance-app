@@ -151,49 +151,77 @@ class AttendanceController extends Controller
     // 勤怠詳細画面の表示
     public function show($id)
     {
+        // 勤怠レコードと関連データを取得
+        $attendanceRecord = AttendanceRecord::with(['breakRecords', 'stampCorrectionRequests'])
+            ->findOrFail($id);
+
+        // 本人以外のアクセス制限
+        if ($attendanceRecord->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $user = Auth::user();
 
-        // 勤怠データ、元の休憩データ、および承認待ち（pending）の修正申請と申請用休憩データを一括取得
-        $attendance = AttendanceRecord::with([
-            'breakRecords',
-            'stampCorrectionRequests' => function ($query) {
-                $query->where('status', 'pending')->with('proposalBreaks');
+        // 該当の勤怠レコードに紐づく最新の修正申請を取得（proposalBreaksもEager Load）
+        $application = StampCorrectionRequest::with('proposalBreaks')
+            ->where('attendance_record_id', $id)
+            ->where('user_id', $user->id)
+            ->latest()
+            ->first();
+
+        $recordDate = Carbon::parse($attendanceRecord->date);
+
+        // --- 1. 出退勤時間の判定 ---
+        if ($application) {
+            $clockIn = $application->new_clock_in ? Carbon::parse($application->new_clock_in)->format('H:i') : '';
+            $clockOut = $application->new_clock_out ? Carbon::parse($application->new_clock_out)->format('H:i') : '';
+        } else {
+            $clockIn = $attendanceRecord->clock_in ? Carbon::parse($attendanceRecord->clock_in)->format('H:i') : '';
+            $clockOut = $attendanceRecord->clock_out ? Carbon::parse($attendanceRecord->clock_out)->format('H:i') : '';
+        }
+
+        // --- 2. 休憩データの判定 ---
+        $breaks = [];
+        if ($application && $application->proposalBreaks->isNotEmpty()) {
+            foreach ($application->proposalBreaks as $break) {
+                $breaks[] = [
+                    'break_in' => $break->new_break_in ? Carbon::parse($break->new_break_in)->format('H:i') : '',
+                    'break_out' => $break->new_break_out ? Carbon::parse($break->new_break_out)->format('H:i') : '',
+                ];
             }
-        ])->findOrFail($id);
+        } else {
+            foreach ($attendanceRecord->breakRecords as $break) {
+                $breaks[] = [
+                    'break_in' => $break->break_in ? Carbon::parse($break->break_in)->format('H:i') : '',
+                    'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
+                ];
+            }
+        }
 
-        // 日付の整形
-        $carbonDate = Carbon::parse($attendance->date);
+        // --- 3. 備考（コメント）の判定 ---
+        // 申請があれば申請理由（comment）、なければ元の勤怠のコメントを表示
+        $comment = $application ? $application->comment : ($attendanceRecord->comment ?? '');
 
-        // 元の休憩データの整形
-        $breaks = $attendance->breakRecords->map(function ($rest) {
-            return [
-                'break_in' => $rest->break_in ? Carbon::parse($rest->break_in)->format('H:i') : '',
-                'break_out' => $rest->break_out ? Carbon::parse($rest->break_out)->format('H:i') : '',
-            ];
-        })->toArray();
-
-        // 画面渡し用のデータ構造を作成
+        // --- 4. Bladeに渡す $data 配列の作成 ---
         $data = [
-            'id' => $attendance->id,
-            'year' => $carbonDate->format('Y年'),
-            'date' => $carbonDate->format('m月d日'),
-            'clock_in' => $attendance->clock_in ? Carbon::parse($attendance->clock_in)->format('H:i') : '',
-            'clock_out' => $attendance->clock_out ? Carbon::parse($attendance->clock_out)->format('H:i') : '',
+            'id' => $attendanceRecord->id,
+            'application' => $application,
+            'year' => $recordDate->format('Y年'),
+            'date' => $recordDate->format('m月d日'),
+            'clock_in' => $clockIn,
+            'clock_out' => $clockOut,
             'breaks' => $breaks,
-            'comment' => $attendance->comment ?? '',
-            // 承認待ちの申請が存在すればそのレコードを取得（なければ null）
-            'application' => $attendance->stampCorrectionRequests->first(),
+            'comment' => $comment,
         ];
 
-        return view('user.user-detail', compact('user', 'data'));
+        return view('user.user-detail', compact('data', 'user'));
     }
-
     // 修正申請の送信処理
     public function update(AttendanceUpdateRequest $request, $id)
     {
         $attendance = AttendanceRecord::findOrFail($id);
 
-        // 1. 二重申請チェック（既に承認待ちの申請がある場合は弾く）
+        // 二重申請チェック
         $existingRequest = StampCorrectionRequest::where('attendance_record_id', $attendance->id)
             ->where('status', 'pending')
             ->first();
@@ -202,26 +230,27 @@ class AttendanceController extends Controller
             return back()->withErrors(['comment' => '承認待ちの申請があるため修正できません']);
         }
 
-        // 2. 修正申請本体（stamp_correction_requests）の登録
+
+        // DBへの保存
         $correctionRequest = StampCorrectionRequest::create([
             'user_id' => Auth::id(),
             'attendance_record_id' => $attendance->id,
             'status' => 'pending',
-            'clock_in' => $request->new_clock_in,
-            'clock_out' => $request->new_clock_out,
+            'new_clock_in' => $request->new_clock_in,
+            'new_clock_out' => $request->new_clock_out,
             'comment' => $request->comment,
         ]);
 
-        // 3. 申請に伴う休憩データ（proposal_breaks）の登録
+        // 提案休憩データの保存
         if ($request->has('new_break_in') && $request->has('new_break_out')) {
             foreach ($request->new_break_in as $index => $breakIn) {
                 $breakOut = $request->new_break_out[$index] ?? null;
 
-                // 開始時間・終了時間の両方が入力されている行のみ登録
                 if (!empty($breakIn) && !empty($breakOut)) {
+                    $targetDate = $attendance->date;
                     $correctionRequest->proposalBreaks()->create([
-                        'break_in' => $breakIn,
-                        'break_out' => $breakOut,
+                        'new_break_in' => $breakIn,
+                        'new_break_out' => $breakOut,
                     ]);
                 }
             }
@@ -229,5 +258,4 @@ class AttendanceController extends Controller
 
         return redirect()->route('stamp_correction_request.list');
     }
-
 }

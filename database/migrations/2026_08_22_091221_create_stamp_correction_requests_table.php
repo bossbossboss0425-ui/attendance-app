@@ -12,8 +12,8 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('attendance_record_id')->constrained('attendance_records')->onDelete('cascade');
             $table->string('status', 50);
-            $table->time('clock_in');
-            $table->time('clock_out');
+            $table->time('new_clock_in');
+            $table->time('new_clock_out');
             $table->text('comment');
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();

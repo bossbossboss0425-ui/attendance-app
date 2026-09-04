@@ -12,8 +12,8 @@ class ProposalBreak extends Model
 
     protected $fillable = [
         'stamp_correction_request_id',
-        'break_in',
-        'break_out',
+        'new_break_in',
+        'new_break_out',
     ];
 
     public function stampCorrectionRequest(): BelongsTo

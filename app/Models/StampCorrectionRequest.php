@@ -15,8 +15,8 @@ class StampCorrectionRequest extends Model
         'user_id',
         'attendance_record_id',
         'status',
-        'clock_in',
-        'clock_out',
+        'new_clock_in',
+        'new_clock_out',
         'comment',
         'approved_at',
     ];
