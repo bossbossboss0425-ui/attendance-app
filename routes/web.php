@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('attendance.detail');
+        Route::post('attendance/{id}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
         Route::get('/attendance/staff/{id}', [StaffController::class, 'attendance'])->name('attendance.staff');
 
         Route::get('/staff/list', [StaffController::class, 'index'])->name('staff.index');

@@ -29,7 +29,7 @@ class StampCorrectionRequestController extends Controller
             }
 
             return [
-                'id' => $app->attendance_record_id, // Bladeの詳細リンク（/application/{id}）に渡すID
+                'id' => $app->attendance_record_id, // Bladeの詳細リンク（/attendance/{id}）に渡すID
                 'approval_status' => $statusStr,
                 'date' => $app->attendanceRecord ? Carbon::parse($app->attendanceRecord->date)->format('Y/m/d') : '',
                 'comment' => $app->comment,
@@ -39,12 +39,5 @@ class StampCorrectionRequestController extends Controller
 
         // viewのパスは Blade の配置場所（user.user-application-list）に指定
         return view('user.user-application-list', compact('user', 'formattedApplications'));
-    }
-
-    // 申請詳細の表示
-    public function show($id)
-    {
-        // /application/{id} に来たら、そのまま勤怠詳細画面 (/attendance/{id}) へ転送
-        return redirect()->route('attendance.detail', ['id' => $id]);
     }
 }

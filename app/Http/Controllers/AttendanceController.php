@@ -203,10 +203,12 @@ class AttendanceController extends Controller
         // 申請があれば申請理由（comment）、なければ元の勤怠のコメントを表示
         $comment = $application ? $application->comment : ($attendanceRecord->comment ?? '');
 
+        $pendingApplication = ($application && $application->status === 'pending') ? $application : null;
+
         // --- 4. Bladeに渡す $data 配列の作成 ---
         $data = [
             'id' => $attendanceRecord->id,
-            'application' => $application,
+            'application' => $pendingApplication,
             'year' => $recordDate->format('Y年'),
             'date' => $recordDate->format('m月d日'),
             'clock_in' => $clockIn,
