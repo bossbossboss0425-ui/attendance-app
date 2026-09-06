@@ -143,14 +143,17 @@ class AttendanceBreakTest extends TestCase
     /** @test */
     public function 休憩時刻が勤怠一覧画面で確認できる(): void
     {
+        // 1. テスト開始時に時刻を固定（2026-09-04 09:00:00）
+        Carbon::setTestNow(Carbon::create(2026, 9, 4, 9, 0, 0));
+
         // Arrange（準備）
         $user = User::factory()->create();
 
         $attendance = AttendanceRecord::create([
             'user_id' => $user->id,
-            'date' => now()->toDateString(),
+            'date' => Carbon::now()->toDateString(), // 2026-09-04 になる
             'status' => '出勤中',
-            'clock_in' => '09:00:00',
+            'clock_in' => Carbon::now()->toTimeString(),
         ]);
 
         // Act（実行：12:00に休憩入 -> 13:00に休憩戻）
@@ -167,8 +170,9 @@ class AttendanceBreakTest extends TestCase
         // Act & Assert（一覧画面の確認）
         $response = $this->actingAs($user)->get(route('attendance.index'));
         $response->assertStatus(200)
-            ->assertSee('1:00');
+            ->assertSee('1:00'); // 画面の表記形式に合わせて '01:00' や '1時間00分' になる場合は調整してください
 
+        // テスト終了後に時刻固定を解除
         Carbon::setTestNow();
     }
 }
