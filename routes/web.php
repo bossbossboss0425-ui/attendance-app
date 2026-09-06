@@ -24,12 +24,28 @@ Route::middleware('guest')->group(function () {
 // ----------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
-    // 申請一覧
+    // 申請一覧・詳細
     Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])->name('stamp_correction_request.list');
+    Route::get('/application/{id}', [AttendanceController::class, 'show'])->name('application.show');
 
     // --- 管理者専用：修正申請の承認画面・承認処理 ---
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [ApplicationController::class, 'show'])->name('admin.application.show');
     Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [ApplicationController::class, 'approve'])->name('admin.application.approve');
+
+    // --- 管理者用 (/admin/...) ---
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+        Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
+
+        // ★本来の管理者ルート
+        Route::get('/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('attendance.detail');
+        Route::post('/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
+
+        Route::get('/attendance/staff/{id}', [StaffController::class, 'attendance'])->name('attendance.staff');
+        Route::get('/staff/list', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->name('application.list');
+    });
 
     // --- 一般ユーザー用 ---
     Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
@@ -38,16 +54,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.detail');
     Route::post('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
 
-    // --- 管理者用 (/admin/...) ---
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
-        Route::get('/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
-        Route::get('/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('attendance.detail');
-        Route::post('attendance/{id}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
-        Route::get('/attendance/staff/{id}', [StaffController::class, 'attendance'])->name('attendance.staff');
-
-        Route::get('/staff/list', [StaffController::class, 'index'])->name('staff.index');
-        Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->name('application.list');
-    });
 });

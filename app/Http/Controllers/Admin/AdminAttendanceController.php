@@ -96,6 +96,6 @@ class AdminAttendanceController extends Controller
             }
         }
 
-        return redirect()->route('admin.attendance.index')->with('success', '勤怠情報を更新しました');
+        return redirect()->route('admin.attendance.index');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Admin\AdminAttendanceController;
 use App\Http\Requests\AttendanceUpdateRequest;
 use App\Models\AttendanceRecord;
 use App\Models\StampCorrectionRequest;
@@ -152,16 +153,22 @@ class AttendanceController extends Controller
     // 勤怠詳細画面の表示
     public function show($id)
     {
+
+        $user = Auth::user();
+
+        if ($user && $user->admin_status) {
+            return redirect()->route('admin.attendance.detail', ['id' => $id]);
+
+        }
+
         // 勤怠レコードと関連データを取得
         $attendanceRecord = AttendanceRecord::with(['breakRecords', 'stampCorrectionRequests'])
             ->findOrFail($id);
 
-        // 本人以外のアクセス制限
+        // 本人以外のアクセス制限（一般ユーザー同士の閲覧防止）
         if ($attendanceRecord->user_id !== Auth::id()) {
             abort(403);
         }
-
-        $user = Auth::user();
 
         // 該当の勤怠レコードに紐づく最新の修正申請を取得（proposalBreaksもEager Load）
         $application = StampCorrectionRequest::with('proposalBreaks')
@@ -223,6 +230,13 @@ class AttendanceController extends Controller
     // 修正申請の送信処理
     public function update(AttendanceUpdateRequest $request, $id)
     {
+        $user = Auth::user();
+
+        // ★ 1. 管理者の場合は AdminAttendanceController@update へ処理を移譲する
+        if ($user && $user->admin_status) {
+            return app()->call([app(AdminAttendanceController::class), 'update'], ['id' => $id]);
+        }
+
         $attendance = AttendanceRecord::findOrFail($id);
 
         // 二重申請チェック
