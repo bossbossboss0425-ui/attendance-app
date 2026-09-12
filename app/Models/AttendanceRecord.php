@@ -40,16 +40,14 @@ class AttendanceRecord extends Model
 
     public function getTotalBreakSecondsAttribute(): int
     {
-        $totalSeconds = 0;
-        foreach ($this->breakRecords as $break) {
-            if ($break->break_in && $break->break_out) {
+        return $this->breakRecords
+            ->filter(fn (BreakRecord $break): bool => (bool) ($break->break_in && $break->break_out))
+            ->sum(function (BreakRecord $break): int {
                 $in = Carbon::parse($break->break_in);
                 $out = Carbon::parse($break->break_out);
-                $totalSeconds += $out->diffInSeconds($in);
-            }
-        }
 
-        return $totalSeconds;
+                return $out->diffInSeconds($in);
+            });
     }
 
     // 休憩合計時間を H:i 形式で取得

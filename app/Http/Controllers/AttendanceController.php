@@ -7,14 +7,16 @@ use App\Http\Requests\AttendanceUpdateRequest;
 use App\Models\AttendanceRecord;
 use App\Models\StampCorrectionRequest;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
     // 出勤登録画面（打刻画面）の表示
 
-    public function create()
+    public function create(): View
     {
         $user = Auth::user();
         $now = Carbon::now();
@@ -29,7 +31,7 @@ class AttendanceController extends Controller
 
     // 打刻登録処理
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $now = Carbon::now();
@@ -97,7 +99,7 @@ class AttendanceController extends Controller
 
     // 勤怠一覧画面の表示
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $user = Auth::user();
 
@@ -151,7 +153,7 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面の表示
-    public function show($id)
+    public function show(int $id): View|RedirectResponse
     {
 
         $user = Auth::user();
@@ -228,7 +230,7 @@ class AttendanceController extends Controller
     }
 
     // 修正申請の送信処理
-    public function update(AttendanceUpdateRequest $request, $id)
+    public function update(AttendanceUpdateRequest $request, int $id): View|RedirectResponse
     {
         $user = Auth::user();
 
