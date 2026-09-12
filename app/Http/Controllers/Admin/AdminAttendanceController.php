@@ -32,7 +32,7 @@ class AdminAttendanceController extends Controller
         $users = User::all();
 
         // 勤怠レコードと休憩レコードを取得
-        $rawAttendanceRecords = AttendanceRecord::with('breakRecords')
+        $rawAttendanceRecords = AttendanceRecord::with(['user', 'breakRecords'])
             ->whereDate('date', $date->format('Y-m-d'))
             ->get();
 

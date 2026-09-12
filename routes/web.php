@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAttendanceController;
 use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\StampCorrectionRequestController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -101,6 +102,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
         Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
         Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
+
+        // マイ勤怠レポート画面
+        Route::get('/attendance/report', [AttendanceReportController::class, 'index'])->name('attendance.report');
+
         Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.detail');
         Route::post('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
     });
