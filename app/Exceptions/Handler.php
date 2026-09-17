@@ -2,7 +2,11 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +30,31 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        // 404 (Not Found)
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'error' => '勤怠情報が見つかりませんでした。',
+                ], 404);
+            }
+        });
+    }
+
+    /**
+     * 例外に対する HTTP レスポンスのレンダリング（親クラスの自動変換より前に捕捉する）
+     */
+    public function render($request, Throwable $e)
+    {
+        if ($request->is('api/*')) {
+            // AuthorizationException または AccessDeniedHttpException の双方を捕捉
+            if ($e instanceof AuthorizationException || $e instanceof AccessDeniedHttpException) {
+                return response()->json([
+                    'error' => 'この操作を実行する権限がありません。',
+                ], 403);
+            }
+        }
+
+        return parent::render($request, $e);
     }
 }

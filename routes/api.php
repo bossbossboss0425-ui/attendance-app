@@ -1,19 +1,24 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\V1\AttendanceRecordController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API Routes (v1)
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('v1')->group(function () {
+    // 読み取り系（認証不要）
+    Route::get('/attendance-records', [AttendanceRecordController::class, 'index']);
+    Route::get('/attendance-records/{attendanceRecord}', [AttendanceRecordController::class, 'show']);
+
+    // 書き込み系（Sanctum認証が必要）
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/attendance-records', [AttendanceRecordController::class, 'store']);
+        Route::put('/attendance-records/{attendanceRecord}', [AttendanceRecordController::class, 'update']);
+        Route::patch('/attendance-records/{attendanceRecord}', [AttendanceRecordController::class, 'update']);
+        Route::delete('/attendance-records/{attendanceRecord}', [AttendanceRecordController::class, 'destroy']);
+    });
 });
