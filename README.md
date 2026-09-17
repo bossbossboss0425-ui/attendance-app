@@ -216,17 +216,17 @@ erDiagram
 
 ## ログイン情報（初期データ）
 
-管理者ユーザー
-メールアドレス：user3@example.com
-パスワード：password
+- **管理者ユーザー**
+    - メールアドレス：user3@example.com
+    - パスワード：password
 
-一般ユーザー1
-メールアドレス：user1@example.com
-パスワード：password
+- **一般ユーザー1**
+    - メールアドレス：user1@example.com
+    - パスワード：password
 
-一般ユーザー2
-メールアドレス：user2@example.com
-パスワード：password
+- **一般ユーザー2**
+    - メールアドレス：user2@example.com
+    - パスワード：password
 
 ## テスト実行
 
