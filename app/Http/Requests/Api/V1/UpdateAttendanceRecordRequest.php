@@ -32,6 +32,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
             'clock_in' => ['sometimes', 'required', 'date_format:H:i'],
             'clock_out' => ['nullable', 'date_format:H:i', 'after:clock_in'],
             'status' => ['nullable', 'string'],
+            'comment' => ['nullable', 'string'],
         ];
     }
 }
