@@ -36,7 +36,7 @@ class AdminStampCorrectionTest extends TestCase
 
         // Act
         $response = $this->actingAs($admin)
-            ->get(route('admin.application.list', ['tab' => 'pending']));
+            ->get(route('stamp_correction_request.list', ['tab' => 'pending']));
 
         // Assert
         $response->assertStatus(200);
@@ -67,7 +67,7 @@ class AdminStampCorrectionTest extends TestCase
 
         // Act
         $response = $this->actingAs($admin)
-            ->get(route('admin.application.list', ['tab' => 'approved']));
+            ->get(route('stamp_correction_request.list', ['tab' => 'approved']));
 
         // Assert
         $response->assertStatus(200);
